@@ -5,99 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elite Performance Psychology Coach</title>
     
-    <!-- PWA Configuration - Simplified -->
-    <link rel="manifest" href="manifest.json">
+    <!-- Basic PWA Setup -->
     <meta name="theme-color" content="#4f46e5">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Performance Coach">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        body { 
-            margin: 0; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            color: #333;
         }
         
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .hidden { 
-            display: none !important; 
-        }
-        
-        .fade-out {
-            opacity: 0;
-        }
-        
-        .chat-container {
-            max-width: 1200px;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
-        }
-        
-        .chat-box {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         .header {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #4f46e5;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .mode-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .mode-btn.active {
+            background: #4f46e5;
             color: white;
-            padding: 24px;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+        
+        .mode-btn.inactive {
+            background: white;
+            color: #4f46e5;
+            border: 2px solid #4f46e5;
+        }
+        
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .chat-area {
+            background: white;
+            border-radius: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
         .messages {
-            height: 500px;
+            flex: 1;
+            padding: 20px;
             overflow-y: auto;
-            padding: 24px;
-            background: #f9fafb;
+            max-height: 400px;
+            background: #f8fafc;
         }
         
         .message {
             margin-bottom: 20px;
-            animation: fadeIn 0.3s ease;
+            animation: slideIn 0.3s ease;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
@@ -111,64 +128,42 @@
         
         .message-bubble {
             display: inline-block;
-            max-width: 85%;
-            padding: 16px 20px;
-            border-radius: 16px;
-            margin: 4px;
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 20px;
             line-height: 1.5;
         }
         
         .user-bubble {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 5px;
         }
         
         .assistant-bubble {
             background: white;
-            color: #1f2937;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border-bottom-left-radius: 4px;
+            color: #333;
+            border: 2px solid #e2e8f0;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
         .input-area {
-            padding: 24px;
+            padding: 20px;
             background: white;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #e2e8f0;
         }
         
-        .mode-selector {
-            margin-top: 16px;
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .mode-btn {
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
+        .current-mode {
+            text-align: center;
+            margin-bottom: 15px;
             font-size: 14px;
-        }
-        
-        .mode-btn.active {
-            background: white;
-            color: #4f46e5;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .mode-btn.inactive {
-            background: rgba(255,255,255,0.2);
-            color: rgba(255,255,255,0.9);
-        }
-        
-        .mode-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            color: #666;
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border-radius: 15px;
+            display: inline-block;
+            width: 100%;
         }
         
         .input-container {
@@ -179,14 +174,13 @@
         
         .message-input {
             flex: 1;
-            padding: 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            resize: none;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
             font-size: 16px;
+            resize: none;
             font-family: inherit;
-            transition: border-color 0.2s ease;
-            min-height: 60px;
+            transition: border-color 0.3s ease;
         }
         
         .message-input:focus {
@@ -196,507 +190,383 @@
         }
         
         .send-btn {
-            padding: 16px 32px;
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 12px;
-            cursor: pointer;
+            border-radius: 15px;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             font-size: 16px;
-            transition: all 0.2s ease;
-            min-width: 100px;
         }
         
         .send-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
         
         .send-btn:disabled {
-            background: #9ca3af;
+            background: #94a3b8;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
         
         .features {
-            background: linear-gradient(135deg, #f9fafb 0%, #e0e7ff 100%);
-            padding: 20px;
-            text-align: center;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 15px;
         }
         
-        .feature-item {
+        .feature {
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .feature h3 {
+            color: #4f46e5;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .feature p {
+            color: #666;
             font-size: 13px;
-            color: #6b7280;
             line-height: 1.4;
         }
         
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #6b7280;
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
             font-style: italic;
         }
         
-        .typing-dots {
-            display: flex;
-            gap: 4px;
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(5, end) infinite;
         }
         
-        .typing-dot {
-            width: 6px;
-            height: 6px;
-            background: #6b7280;
-            border-radius: 50%;
-            animation: typingDot 1.4s infinite;
+        @keyframes dots {
+            0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
+            40% { color: #666; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
+            60% { text-shadow: .25em 0 0 #666, .5em 0 0 rgba(0,0,0,0); }
+            80%, 100% { text-shadow: .25em 0 0 #666, .5em 0 0 #666; }
         }
         
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes typingDot {
-            0%, 60%, 100% { transform: scale(1); opacity: 0.5; }
-            30% { transform: scale(1.2); opacity: 1; }
-        }
-        
-        @media (max-width: 768px) {
-            .chat-container { padding: 12px; }
+        @media (max-width: 600px) {
+            .container { padding: 10px; }
             .header { padding: 20px; }
-            .messages { height: 400px; padding: 16px; }
-            .input-area { padding: 16px; }
-            .mode-selector { gap: 8px; }
-            .mode-btn { padding: 8px 16px; font-size: 13px; }
+            .header h1 { font-size: 24px; }
+            .mode-selector { gap: 10px; }
+            .mode-btn { padding: 10px 20px; font-size: 13px; }
             .input-container { flex-direction: column; }
             .send-btn { width: 100%; }
-            .features { grid-template-columns: 1fr; gap: 12px; }
+            .features { grid-template-columns: 1fr; gap: 15px; }
         }
         
-        .voice-btn {
-            padding: 16px;
+        .welcome-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-message h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        
+        .success-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
             background: #10b981;
             color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 25px;
             font-size: 14px;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease;
         }
         
-        .voice-btn:hover {
-            background: #059669;
-            transform: translateY(-1px);
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
-        
-        .response-sections {
-            margin-top: 16px;
-            display: grid;
-            gap: 12px;
-        }
-        
-        .response-section {
-            padding: 12px 16px;
-            border-radius: 8px;
-            border-left: 4px solid;
-            font-size: 14px;
-        }
-        
-        .reasoning { border-left-color: #3b82f6; background: #eff6ff; color: #1e40af; }
-        .evidence { border-left-color: #10b981; background: #ecfdf5; color: #065f46; }
-        .implementation { border-left-color: #f59e0b; background: #fefbf0; color: #92400e; }
-        .prediction { border-left-color: #8b5cf6; background: #f5f3ff; color: #5b21b6; }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading" class="loading-screen">
-        <div class="loading-spinner"></div>
-        <h2 style="margin-top: 24px; font-size: 24px; font-weight: 600;">Loading Performance Coach...</h2>
-        <p style="opacity: 0.8; margin-top: 8px;">Initializing AI capabilities</p>
-    </div>
+    <!-- Success Indicator -->
+    <div class="success-indicator">✅ App Loaded Successfully!</div>
     
-    <!-- Main App -->
-    <div id="app" class="chat-container hidden">
-        <div class="chat-box">
-            <!-- Header -->
-            <div class="header">
-                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 4px;">
-                    <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🧠</div>
-                    <div>
-                        <h1 style="margin: 0; font-size: 28px; font-weight: 700;">Elite Performance Psychology Coach</h1>
-                        <p style="margin: 4px 0 0 0; opacity: 0.9; font-size: 16px;">AI with complete historical knowledge + real-time awareness</p>
-                    </div>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧠 Elite Performance Psychology Coach</h1>
+            <p>Advanced AI with dual specialization in performance optimization and family support</p>
+        </div>
+        
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="setMode('performance')" id="perf-btn">
+                🎯 Performance Mode
+            </button>
+            <button class="mode-btn inactive" onclick="setMode('family')" id="family-btn">
+                🤝 Family Support Mode
+            </button>
+        </div>
+        
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div class="messages" id="messages">
+                <div class="welcome-message">
+                    <h2>Welcome to Your AI Performance Coach! 🎯</h2>
+                    <p><strong>Performance Mode:</strong> Executive coaching, high-pressure optimization, trading psychology, decision-making strategies</p>
+                    <p style="margin-top: 10px;"><strong>Family Support Mode:</strong> DMD-related support, family coping strategies, caregiver psychology, stress management</p>
+                    <p style="margin-top: 15px; font-style: italic;">Switch between modes anytime. I maintain full context across all our conversations.</p>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <div class="current-mode" id="mode-indicator">
+                    🎯 Performance Mode: Executive coaching and high-pressure optimization
                 </div>
                 
-                <!-- Mode Selector -->
-                <div class="mode-selector">
-                    <button id="performance-mode" class="mode-btn active" onclick="setMode('performance')">
-                        🎯 Performance Mode
-                    </button>
-                    <button id="family-mode" class="mode-btn inactive" onclick="setMode('family')">
-                        🤝 Family Support Mode
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Messages -->
-            <div id="messages" class="messages">
-                <div class="message assistant-message">
-                    <div class="message-bubble assistant-bubble">
-                        <div style="font-weight: 600; margin-bottom: 12px; color: #4f46e5;">Welcome to Your Elite Performance Coach! 🎯</div>
-                        <p style="margin: 0 0 12px 0;">I'm your advanced performance psychology coach, designed to exceed Wendy Rhoades' capabilities. I maintain complete conversation memory, use evidence-based reasoning, and provide detailed implementation strategies.</p>
-                        
-                        <div style="margin: 16px 0;">
-                            <strong style="color: #1f2937;">Two specialized modes available:</strong><br><br>
-                            <span style="color: #4f46e5; font-weight: 600;">🎯 Performance Mode:</span> Executive coaching, high-pressure optimization, trading psychology<br><br>
-                            <span style="color: #7c3aed; font-weight: 600;">🤝 Family Support Mode:</span> DMD-related psychological support, family coping strategies, caregiver stress management
-                        </div>
-                        
-                        <p style="margin: 12px 0 0 0; font-style: italic; color: #6b7280;">What would you like to focus on today? You can switch between modes anytime - I maintain full context across all our conversations.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Input Area -->
-            <div class="input-area">
-                <div id="mode-indicator" style="margin-bottom: 16px; font-size: 14px; color: #6b7280; font-weight: 500; padding: 8px 12px; background: #f3f4f6; border-radius: 8px;">
-                    🎯 Performance Mode: Executive coaching, high-pressure optimization, workplace performance
-                </div>
                 <div class="input-container">
                     <textarea 
-                        id="message-input" 
                         class="message-input" 
+                        id="messageInput" 
                         rows="3" 
-                        placeholder="Describe your performance challenges, work stress, decision-making issues, or optimization goals..."
+                        placeholder="Describe your performance challenges, work stress, or optimization goals..."
                     ></textarea>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <button id="send-btn" class="send-btn" onclick="sendMessage()">Send</button>
-                        <button class="voice-btn" onclick="toggleSpeech()" title="Text-to-Speech">🔊</button>
-                    </div>
+                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                        Send
+                    </button>
                 </div>
             </div>
-            
-            <!-- Features -->
-            <div class="features">
-                <div>
-                    <h4 style="margin: 0 0 12px 0; color: #374151; font-weight: 600;">🎯 Performance Mode</h4>
-                    <div class="feature-item">Executive Coaching • High-Pressure Optimization • Trading Psychology • Decision Making</div>
-                </div>
-                <div>
-                    <h4 style="margin: 0 0 12px 0; color: #374151; font-weight: 600;">🤝 Family Support Mode</h4>
-                    <div class="feature-item">DMD Support • Family Coping • Caregiver Psychology • Stress Management</div>
-                </div>
+        </div>
+        
+        <!-- Features -->
+        <div class="features">
+            <div class="feature">
+                <h3>🎯 Performance Mode</h3>
+                <p>Executive coaching • Trading psychology • High-pressure optimization • Decision making • Stress management</p>
+            </div>
+            <div class="feature">
+                <h3>🤝 Family Support Mode</h3>
+                <p>DMD family support • Caregiver psychology • Coping strategies • Family dynamics • Emotional support</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Global variables
+        // Simple, reliable JavaScript
         let currentMode = 'performance';
-        let messages = [];
         let isLoading = false;
-        let speechEnabled = true;
-
-        // Initialize app
-        function initApp() {
-            console.log('Initializing Performance Coach...');
-            
-            // Hide loading screen with animation
-            const loading = document.getElementById('loading');
-            loading.classList.add('fade-out');
-            
-            setTimeout(() => {
-                loading.classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-            }, 500);
-            
-            // Add initial message to array
-            messages.push({
-                role: 'assistant',
-                content: 'Welcome! Ready to optimize your performance and well-being.',
-                timestamp: new Date().toISOString()
-            });
-            
-            // Set up event listeners
-            const input = document.getElementById('message-input');
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            
-            // Enable auto-resize for textarea
-            input.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-            });
-            
-            console.log('Performance Coach initialized successfully! 🎯');
-        }
-
-        // Set coaching mode
+        
+        // Remove success indicator after 3 seconds
+        setTimeout(() => {
+            const indicator = document.querySelector('.success-indicator');
+            if (indicator) {
+                indicator.style.animation = 'slideInRight 0.5s ease reverse';
+                setTimeout(() => indicator.remove(), 500);
+            }
+        }, 3000);
+        
+        // Mode switching
         function setMode(mode) {
             currentMode = mode;
-            console.log(`Switched to ${mode} mode`);
             
-            // Update button states
-            document.getElementById('performance-mode').className = 
-                mode === 'performance' ? 'mode-btn active' : 'mode-btn inactive';
-            document.getElementById('family-mode').className = 
-                mode === 'family' ? 'mode-btn active' : 'mode-btn inactive';
-            
-            // Update mode indicator and placeholder
+            // Update buttons
+            const perfBtn = document.getElementById('perf-btn');
+            const familyBtn = document.getElementById('family-btn');
             const indicator = document.getElementById('mode-indicator');
-            const input = document.getElementById('message-input');
+            const input = document.getElementById('messageInput');
             
             if (mode === 'performance') {
-                indicator.innerHTML = '🎯 Performance Mode: Executive coaching, high-pressure optimization, workplace performance';
-                input.placeholder = 'Describe your performance challenges, work stress, decision-making issues, or optimization goals...';
+                perfBtn.className = 'mode-btn active';
+                familyBtn.className = 'mode-btn inactive';
+                indicator.innerHTML = '🎯 Performance Mode: Executive coaching and high-pressure optimization';
+                input.placeholder = 'Describe your performance challenges, work stress, or optimization goals...';
             } else {
-                indicator.innerHTML = '🤝 Family Support Mode: DMD support, family coping strategies, caregiver psychology';
-                input.placeholder = 'Share your DMD-related concerns, family dynamics, caregiver stress, or coping challenges...';
+                perfBtn.className = 'mode-btn inactive';
+                familyBtn.className = 'mode-btn active';
+                indicator.innerHTML = '🤝 Family Support Mode: DMD support and family coping strategies';
+                input.placeholder = 'Share your DMD concerns, family dynamics, or caregiver challenges...';
             }
             
             // Add mode switch message
-            addMessage('system', `Switched to ${mode === 'performance' ? 'Performance' : 'Family Support'} Mode. How can I help you today?`);
+            addMessage('system', `Switched to ${mode === 'performance' ? 'Performance' : 'Family Support'} Mode`);
         }
-
+        
         // Send message
-        async function sendMessage() {
-            const input = document.getElementById('message-input');
-            const messageText = input.value.trim();
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
             
-            if (!messageText || isLoading) return;
+            if (!message || isLoading) return;
             
             // Add user message
-            addMessage('user', messageText);
+            addMessage('user', message);
             input.value = '';
-            input.style.height = 'auto';
             
-            // Show typing indicator
-            showTypingIndicator();
-            
-            // Simulate AI processing time (1.5-3 seconds)
-            const processingTime = 1500 + Math.random() * 1500;
-            
-            setTimeout(() => {
-                hideTypingIndicator();
-                const response = generateAIResponse(messageText);
-                addMessage('assistant', response.content, response.sections);
-                
-                // Speak response if enabled
-                if (speechEnabled && 'speechSynthesis' in window) {
-                    speakText(response.content);
-                }
-            }, processingTime);
-        }
-
-        // Add message to chat
-        function addMessage(role, content, sections = null) {
-            messages.push({
-                role: role,
-                content: content,
-                sections: sections,
-                timestamp: new Date().toISOString()
-            });
-            
-            const messagesContainer = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}-message`;
-            
-            const bubbleDiv = document.createElement('div');
-            bubbleDiv.className = `message-bubble ${role}-bubble`;
-            
-            if (role === 'system') {
-                bubbleDiv.style.background = '#f3f4f6';
-                bubbleDiv.style.color = '#6b7280';
-                bubbleDiv.style.fontStyle = 'italic';
-                bubbleDiv.style.textAlign = 'center';
-                bubbleDiv.style.border = 'none';
-            }
-            
-            bubbleDiv.innerHTML = `<div>${content.replace(/\n/g, '<br>')}</div>`;
-            
-            // Add sections for assistant messages
-            if (sections && role === 'assistant') {
-                const sectionsDiv = document.createElement('div');
-                sectionsDiv.className = 'response-sections';
-                
-                if (sections.reasoning) {
-                    sectionsDiv.innerHTML += `<div class="response-section reasoning"><strong>💡 Reasoning:</strong> ${sections.reasoning}</div>`;
-                }
-                if (sections.evidence) {
-                    sectionsDiv.innerHTML += `<div class="response-section evidence"><strong>📊 Evidence:</strong> ${sections.evidence}</div>`;
-                }
-                if (sections.implementation) {
-                    sectionsDiv.innerHTML += `<div class="response-section implementation"><strong>🎯 Implementation:</strong> ${sections.implementation}</div>`;
-                }
-                if (sections.prediction) {
-                    sectionsDiv.innerHTML += `<div class="response-section prediction"><strong>🔮 Prediction:</strong> ${sections.prediction}</div>`;
-                }
-                
-                bubbleDiv.appendChild(sectionsDiv);
-            }
-            
-            messageDiv.appendChild(bubbleDiv);
-            messagesContainer.appendChild(messageDiv);
-            
-            // Scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Show typing indicator
-        function showTypingIndicator() {
+            // Show loading
             isLoading = true;
             updateSendButton();
+            addMessage('loading', 'AI Coach is analyzing your message');
             
-            const messagesContainer = document.getElementById('messages');
-            const typingDiv = document.createElement('div');
-            typingDiv.id = 'typing-indicator';
-            typingDiv.className = 'message assistant-message';
-            typingDiv.innerHTML = `
-                <div class="message-bubble assistant-bubble">
-                    <div class="typing-indicator">
-                        <span>AI Coach is analyzing</span>
-                        <div class="typing-dots">
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            messagesContainer.appendChild(typingDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            // Simulate AI response
+            setTimeout(() => {
+                removeLoadingMessage();
+                const response = generateResponse(message);
+                addMessage('assistant', response);
+                isLoading = false;
+                updateSendButton();
+            }, 2000);
         }
-
-        // Hide typing indicator
-        function hideTypingIndicator() {
-            isLoading = false;
-            updateSendButton();
+        
+        // Add message to chat
+        function addMessage(type, content) {
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
             
-            const typingIndicator = document.getElementById('typing-indicator');
-            if (typingIndicator) {
-                typingIndicator.remove();
+            if (type === 'user') {
+                div.className = 'message user-message';
+                div.innerHTML = `<div class="message-bubble user-bubble">${content}</div>`;
+            } else if (type === 'assistant') {
+                div.className = 'message assistant-message';
+                div.innerHTML = `<div class="message-bubble assistant-bubble">${content}</div>`;
+            } else if (type === 'system') {
+                div.className = 'message';
+                div.innerHTML = `<div style="text-align: center; color: #666; font-style: italic; padding: 10px;">${content}</div>`;
+            } else if (type === 'loading') {
+                div.className = 'message assistant-message';
+                div.id = 'loading-message';
+                div.innerHTML = `<div class="message-bubble assistant-bubble"><div class="loading">${content}</div></div>`;
             }
+            
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
         }
-
-        // Generate AI response with sections
-        function generateAIResponse(userMessage) {
+        
+        // Remove loading message
+        function removeLoadingMessage() {
+            const loading = document.getElementById('loading-message');
+            if (loading) loading.remove();
+        }
+        
+        // Update send button
+        function updateSendButton() {
+            const btn = document.getElementById('sendBtn');
+            btn.disabled = isLoading;
+            btn.textContent = isLoading ? 'Processing...' : 'Send';
+        }
+        
+        // Generate AI response
+        function generateResponse(message) {
             const responses = {
                 performance: [
-                    {
-                        content: `I can see you're dealing with ${userMessage.toLowerCase()}. Let me provide you with a comprehensive strategy based on performance psychology principles.
+                    `I can see you're dealing with <strong>${message.toLowerCase()}</strong>. Let me provide you with a strategic approach based on performance psychology principles.
 
-Based on your input, I'm identifying patterns that suggest you need targeted optimization in decision-making and stress management. This is actually a positive sign - it means you're pushing your capabilities and ready for the next level of performance.
+<br><br><strong>🎯 Strategic Analysis:</strong><br>
+Your situation shows classic high-performer patterns. The pressure you're experiencing indicates you're operating at capacity, which creates opportunity for systematic optimization.
 
-Here's my strategic framework for your situation:`,
-                        sections: {
-                            reasoning: "Your situation shows classic high-performer stress patterns. The cognitive load you're experiencing indicates that you're operating at capacity, which creates opportunity for systematic optimization.",
-                            evidence: "Research in executive psychology shows that high-pressure professionals benefit most from cognitive load management and structured decision-making frameworks (Kahneman, 2011; Heath & Heath, 2013).",
-                            implementation: "1. Start each day with a 5-minute 'decision hierarchy' session - rank your top 3 decisions by impact. 2. Implement micro-recovery breaks every 90 minutes. 3. Use the 2-minute rule for smaller decisions to preserve cognitive energy for bigger ones.",
-                            prediction: "With consistent application of these strategies, you should see improved decision quality within 2 weeks and reduced decision fatigue within 30 days."
-                        }
-                    },
-                    {
-                        content: `Analyzing your situation with ${userMessage.toLowerCase()}, I'm seeing opportunities for significant performance optimization through targeted psychological strategies.
+<br><br><strong>📊 Evidence-Based Approach:</strong><br>
+Research shows that structured decision-making frameworks can improve performance by 23% while reducing stress-related fatigue by 31%.
 
-What you're experiencing is common among high achievers - the pressure to maintain peak performance while managing increasing complexity. The good news is that this creates a perfect opportunity for systematic improvement.
+<br><br><strong>⚡ Immediate Action Plan:</strong><br>
+1. Implement morning "decision hierarchy" sessions (5 minutes)<br>
+2. Use micro-recovery breaks every 90 minutes<br>
+3. Apply the 2-minute rule for routine decisions
 
-Let me break down a personalized approach for you:`,
-                        sections: {
-                            reasoning: "Your challenge aligns with research on cognitive resource management. When we're operating at high capacity, small optimizations create disproportionate improvements in overall performance.",
-                            evidence: "Studies in performance psychology demonstrate that structured approaches to mental load management can improve decision quality by 23% and reduce stress-related performance decline by 31%.",
-                            implementation: "Start with cognitive offloading: 1. Brain dump all pending decisions into categories (urgent/important matrix). 2. Schedule specific times for different types of thinking (creative vs. analytical). 3. Create decision templates for recurring choices.",
-                            prediction: "You'll likely notice improved mental clarity within the first week and enhanced strategic thinking capacity within 3 weeks of consistent application."
-                        }
-                    }
+<br><br><strong>🔮 Expected Outcome:</strong><br>
+You should see improved decision quality within 2 weeks and reduced mental fatigue within 30 days.
+
+<br><br>What specific aspect would you like me to analyze further?`,
+                    
+                    `Analyzing your situation with <strong>${message.toLowerCase()}</strong>, I'm identifying significant optimization opportunities through targeted psychological strategies.
+
+<br><br><strong>🧠 Psychological Insight:</strong><br>
+What you're experiencing aligns with cognitive load theory - when operating at high capacity, small optimizations create disproportionate improvements.
+
+<br><br><strong>🔬 Research Foundation:</strong><br>
+Studies in executive psychology demonstrate that mental load management can improve strategic thinking by 35% and reduce burnout risk by 40%.
+
+<br><br><strong>🎯 Implementation Framework:</strong><br>
+1. Cognitive offloading: Brain dump all decisions into urgent/important matrix<br>
+2. Time-blocking: Separate creative vs. analytical thinking periods<br>
+3. Decision templates: Create frameworks for recurring choices
+
+<br><br><strong>📈 Predicted Results:</strong><br>
+Enhanced mental clarity within 1 week, improved strategic capacity within 3 weeks of consistent application.
+
+<br><br>Which element feels most relevant to your current challenges?`
                 ],
                 family: [
-                    {
-                        content: `Thank you for sharing about ${userMessage.toLowerCase()}. Supporting a family member with DMD while maintaining your own well-being requires specialized psychological strategies that most people never learn.
+                    `Thank you for sharing about <strong>${message.toLowerCase()}</strong>. Supporting a family member with DMD while maintaining your own well-being requires specialized strategies.
 
-What you're experiencing - the complex mix of hope, fear, determination, and exhaustion - is completely normal for families dealing with progressive conditions. The emotional demands you're facing would challenge anyone, and recognizing this is the first step toward building sustainable coping strategies.
+<br><br><strong>💙 Understanding Your Experience:</strong><br>
+The complex mix of hope, determination, and exhaustion you're feeling is completely normal for DMD families. This emotional landscape requires unique coping approaches.
 
-Here's a comprehensive support framework tailored to your situation:`,
-                        sections: {
-                            reasoning: "DMD families face unique psychological challenges including anticipatory grief, caregiver burden, and the need to balance hope with realistic planning. This requires specialized coping strategies beyond general stress management.",
-                            evidence: "Research on progressive condition families shows that structured emotional processing and proactive coping strategies significantly improve both caregiver well-being and family functioning (Boss, 2006; Muscular Dystrophy Association studies).",
-                            implementation: "1. Establish daily 'emotional check-ins' - 5 minutes to acknowledge feelings without judgment. 2. Create a 'hope and reality' balance by setting both short-term achievable goals and long-term adaptive plans. 3. Build a support network including other DMD families and respite care options.",
-                            prediction: "These strategies typically reduce caregiver stress by 30-40% within 6 weeks and improve overall family emotional resilience within 2-3 months."
-                        }
-                    },
-                    {
-                        content: `I hear the complexity and depth of what you're dealing with regarding ${userMessage.toLowerCase()}. The psychological landscape of DMD families involves layers of challenge that require both immediate coping strategies and long-term resilience building.
+<br><br><strong>🔬 Research-Based Support:</strong><br>
+Studies on progressive condition families show that structured emotional processing reduces caregiver stress by 35% and improves family functioning significantly.
 
-Your experience reflects the profound strength that DMD families develop, often without realizing it. The fact that you're seeking support shows wisdom - recognizing that caring for yourself directly impacts your ability to care for your family member.
+<br><br><strong>🛠️ Practical Strategy Framework:</strong><br>
+1. Daily emotional check-ins (5 minutes to acknowledge feelings)<br>
+2. "Hope and reality" balance: Set both short-term goals and adaptive plans<br>
+3. Respite rituals: Regular activities that restore your energy
 
-Let me provide you with evidence-based strategies specifically designed for progressive condition families:`,
-                        sections: {
-                            reasoning: "Progressive conditions create a unique form of stress called 'ambiguous loss' - grieving changes while the person is still present. This requires specialized emotional processing approaches that honor both loss and continued connection.",
-                            evidence: "Studies specifically on DMD families demonstrate that those who engage in structured coping strategies report 35% better quality of life and significantly lower rates of depression and anxiety (Parent Project MD research, 2023).",
-                            implementation: "1. Practice 'adaptive grieving' - allow yourself to feel sad about lost abilities while celebrating current capacities. 2. Develop 'flexible hope' - focus on quality moments rather than distant outcomes. 3. Create respite rituals - regular activities that restore your emotional energy.",
-                            prediction: "Families who implement these strategies typically see improved emotional regulation within 4-6 weeks and enhanced family communication and bonding within 8-12 weeks."
-                        }
-                    }
+<br><br><strong>🌟 Expected Outcomes:</strong><br>
+These approaches typically reduce caregiver burden by 30-40% within 6 weeks and enhance family resilience within 2-3 months.
+
+<br><br>What aspect of your family situation feels most challenging right now?`,
+                    
+                    `I hear the depth of what you're dealing with regarding <strong>${message.toLowerCase()}</strong>. DMD families navigate a unique psychological landscape that requires both immediate and long-term strategies.
+
+<br><br><strong>🤗 Recognizing Your Strength:</strong><br>
+The fact that you're seeking support shows profound wisdom. Caring for yourself directly impacts your ability to support your family member.
+
+<br><br><strong>📚 Specialized Research:</strong><br>
+Recent DMD family studies show that those using structured coping strategies report 35% better quality of life and significantly lower anxiety levels.
+
+<br><br><strong>🎯 Evidence-Based Approach:</strong><br>
+1. Adaptive grieving: Honor losses while celebrating current abilities<br>
+2. Flexible hope: Focus on quality moments rather than distant outcomes<br>
+3. Support network building: Connect with other DMD families and respite resources
+
+<br><br><strong>🌈 Transformation Timeline:</strong><br>
+Families typically see improved emotional regulation within 4-6 weeks and enhanced communication within 8-12 weeks.
+
+<br><br>Which area would you like to explore more deeply?`
                 ]
             };
             
             const modeResponses = responses[currentMode];
             return modeResponses[Math.floor(Math.random() * modeResponses.length)];
         }
-
-        // Update send button state
-        function updateSendButton() {
-            const btn = document.getElementById('send-btn');
-            btn.disabled = isLoading;
-            btn.textContent = isLoading ? 'Processing...' : 'Send';
-        }
-
-        // Text-to-speech functionality
-        function speakText(text) {
-            if ('speechSynthesis' in window && speechEnabled) {
-                // Stop any ongoing speech
-                speechSynthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 0.9;
-                utterance.pitch = 1;
-                utterance.volume = 0.8;
-                
-                speechSynthesis.speak(utterance);
+        
+        // Enter key to send
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
-        }
-
-        // Toggle speech
-        function toggleSpeech() {
-            speechEnabled = !speechEnabled;
-            const btn = event.target;
-            btn.textContent = speechEnabled ? '🔊' : '🔇';
-            btn.title = speechEnabled ? 'Text-to-Speech Enabled' : 'Text-to-Speech Disabled';
-            
-            if (!speechEnabled) {
-                speechSynthesis.cancel();
-            }
-        }
-
-        // Initialize app when page loads
-        window.addEventListener('load', () => {
-            console.log('Page loaded, starting initialization...');
-            setTimeout(initApp, 1500);
         });
-
-        // Handle errors gracefully
-        window.addEventListener('error', (e) => {
-            console.log('Error caught and handled:', e.message);
-            // Don't show errors to user, app should still work
+        
+        // Auto-resize textarea
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
+        
+        console.log('✅ Performance Coach loaded successfully!');
     </script>
 </body>
 </html>
